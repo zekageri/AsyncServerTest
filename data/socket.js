@@ -1,3 +1,6 @@
+var socketState = document.querySelector("#socketState");
+var messages = document.querySelector("#messages");
+
 var socket = null;
 var timer = null;
 var connected = false;
@@ -9,6 +12,7 @@ var onHandlers = {};
 
 var connect = function (_endpoint) {
     if (connected) { return false; }
+    socketState.innerHTML = "Connecting";
     endpoint = _endpoint;
     socket = new WebSocket(`ws://${window.location.hostname}/${endpoint}`);
     events();
@@ -18,6 +22,7 @@ var connect = function (_endpoint) {
 var events = function () {
 
     socket.addEventListener('open', (event) => {
+        socketState.innerHTML = "Connected";
         connected = true;
         clearInterval(timer);
         if (isDebugOn) {
@@ -29,6 +34,7 @@ var events = function () {
         if (isDebugOn) {
             console.log(`[SOCKET] - Disconnected from ${endpoint}`);
         }
+        socketState.innerHTML = "Closed";
         clearInterval(timer);
         timer = setInterval(() => {
             connect(endpoint);
@@ -50,6 +56,9 @@ var events = function () {
         } else {
             console.log('Non json message from server:', event.data);
         }
+        messages.insertAdjacentHTML("beforeend",`
+            <span>${event.data}</span>
+        `);
     });
 }
 
