@@ -9,14 +9,26 @@ SocketHandler socketHandler;
 AsyncWebServer server(80);
 #define INDEX_PATH "/index.html"
 
-const char *ssid = "HITEC Industrial Technology";
-const char *password = "Hitec_EtHiP";
+const char *ssid = "YOUR SSID";
+const char *password = "YOURPW";
+
+void setupAP() {
+    Serial.printf("Setting up AP mode.\n");
+    WiFi.mode(WIFI_AP);
+    if (!WiFi.softAP("AsyncServerTest")) {
+        Serial.println("Failed to set up AP mode.");
+        return;
+    }
+    delay(300);
+    Serial.printf("IP: %s\n", WiFi.softAPIP().toString().c_str());
+}
 
 void setupWifi() {
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
     if (WiFi.waitForConnectResult() != WL_CONNECTED) {
         Serial.printf("WiFi Failed!\n");
+        setupAP();
         return;
     }
     Serial.printf("Wifi connected to %s\n", ssid);
