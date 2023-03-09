@@ -56,7 +56,7 @@ var events = function () {
         } else {
             console.log('Non json message from server:', event.data);
         }
-        messages.insertAdjacentHTML("beforeend",`
+        messages.insertAdjacentHTML("afterbegin",`
             <span>${event.data}</span>
         `);
     });

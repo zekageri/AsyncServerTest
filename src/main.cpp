@@ -9,8 +9,10 @@ SocketHandler socketHandler;
 AsyncWebServer server(80);
 #define INDEX_PATH "/index.html"
 
-const char *ssid = "YOUR SSID";
-const char *password = "YOURPW";
+void testTask(void* parameter);
+
+const char *ssid = "HITEC Industrial Technology";
+const char *password = "Hitec_EtHiP";
 
 void setupAP() {
     Serial.printf("Setting up AP mode.\n");
@@ -53,8 +55,19 @@ void setup() {
     socketHandler.init(&server, "/main");
     server.serveStatic("/", LittleFS, "/");
     server.begin();
+
+    xTaskCreateUniversal(testTask, "testTask", 2000, NULL, 2, NULL, -1);
+
 }
 
 void loop() {
     socketHandler.run();
+}
+
+void testTask(void* parameter){
+    int core = xPortGetCoreID();
+    for(;;){
+        socketHandler.sendAll("Ping from core %d",core);
+        vTaskDelay(1000);
+    }
 }

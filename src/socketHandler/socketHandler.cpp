@@ -66,13 +66,26 @@ void SocketHandler::printClientCount() {
 }
 
 void SocketHandler::processMessage(int clientID) {
-    Serial.printf("***** Socket message from client id %d *****\n\n%s\n\n", clientID, buffer);
+    Serial.printf("***** Got a socket message from client %d *****\n", clientID);
+
+    StaticJsonDocument<10000> doc;
+    DeserializationError error = deserializeJson(doc,buffer);
+    if( error ){
+        Serial.printf("\nNon json message\n%s\n",buffer);
+        return;
+    }
+
+    Serial.println();
+    serializeJsonPretty(doc,Serial);
+    Serial.println();
+
 }
 
 void SocketHandler::sendPong(){
     if(millis() - lastPongMS >= 1000){
         lastPongMS = millis();
-        sendAll("pong");
+        int core = xPortGetCoreID();
+        sendAll("Ping from %d",core);
     }
 }
 

@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
+#include <ArduinoJson.h>
 
 #define BUFF_SIZE 10000
 class SocketHandler {
