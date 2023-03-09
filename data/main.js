@@ -1,13 +1,32 @@
-import * as socket from "/socket.js"
+import * as socket from "/socketModule.js"
 
 window.addEventListener("load", (event) => {
     let sendBtn = document.querySelector("#payloadSender");
     let generatePayloadBtn = document.querySelector("#generatePayloadBtn");
     let payloadArea = document.querySelector("#payloadArea");
     let payloadText = document.querySelector("#payloadText");
+    let socketState = document.querySelector("#socketState");
+    let messages = document.querySelector("#messages");
+
     let lipsum = new LoremIpsum();
 
-    socket.connect("main");
+    socket.connect("main",function(){
+        socketState.innerHTML = "Connected";
+    });
+
+    socket.on("connecting",function(){
+        socketState.innerHTML = "Connecting";
+    });
+    
+    socket.on("close",function(){
+        socketState.innerHTML = "Disconnected";
+    });
+
+    socket.on("raw",function(data){
+        messages.insertAdjacentHTML("afterbegin",`
+            <span>${data}</span>
+        `);
+    });
 
     setInterval(() => {
         socket.send("ping");

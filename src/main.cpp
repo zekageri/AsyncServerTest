@@ -4,7 +4,9 @@
 #include <FS.h>
 #include <LittleFS.h>
 #include <socketHandler/socketHandler.h>
+#include <uptimeHandler/uptimeHandler.h>
 
+UptimeHandler uptimeHandler;
 SocketHandler socketHandler;
 AsyncWebServer server(80);
 #define INDEX_PATH "/index.html"
@@ -60,8 +62,16 @@ void setup() {
 
 }
 
+
+long lastPongMS = 0;
 void loop() {
+    uptimeHandler.run();
     socketHandler.run();
+    if(millis() - lastPongMS >= 1000){
+        lastPongMS = millis();
+        int core = xPortGetCoreID();
+        socketHandler.sendAll("Ping from core %d uptime: %s",core,uptimeHandler.get());
+    }
 }
 
 void testTask(void* parameter){

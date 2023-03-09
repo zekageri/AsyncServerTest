@@ -21,8 +21,6 @@ class SocketHandler {
         void printClientCount();
         void processMessage(int clientID);
 
-        long lastPongMS = 0;
-        void sendPong();
     public:
         void init(AsyncWebServer* server, const char* endpoint);
         boolean sendTo(int clientID, const char* msg, ...);

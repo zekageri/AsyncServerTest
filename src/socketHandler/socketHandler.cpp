@@ -86,15 +86,6 @@ void SocketHandler::processMessage(int clientID) {
 
 }
 
-void SocketHandler::sendPong(){
-    if(millis() - lastPongMS >= 1000){
-        lastPongMS = millis();
-        int core = xPortGetCoreID();
-        sendAll("Ping from %d",core);
-    }
-}
-
 void SocketHandler::run(){
-    sendPong();
     mainSocket->cleanupClients();
 }
