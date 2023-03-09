@@ -9,6 +9,7 @@
 #define BUFF_SIZE 10000
 class SocketHandler {
     private:
+        SemaphoreHandle_t sendMutex = NULL;
         AsyncWebSocket* mainSocket;
 
         boolean isDebugOn = true;

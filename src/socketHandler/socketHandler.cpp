@@ -1,6 +1,8 @@
 #include <SocketHandler/SocketHandler.h>
 
 void SocketHandler::init(AsyncWebServer *server, const char* endpoint) {
+    sendMutex = xSemaphoreCreateMutex();
+
     mainSocket = new AsyncWebSocket(endpoint);
     server->addHandler(mainSocket);
     mainSocket->onEvent([this](AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
@@ -52,11 +54,14 @@ boolean SocketHandler::sendAll(const char *msg, ...) {
     if (mainSocket->count() < 1) {
         return false;
     }
-    va_list args;
-    va_start(args, msg);
-    vsprintf(sendBuff, msg, args);
-    va_end(args);
-    mainSocket->textAll(sendBuff);
+    if ( xSemaphoreTake (sendMutex, portMAX_DELAY)) {
+        va_list args;
+        va_start(args, msg);
+            vsprintf(sendBuff, msg, args);
+        va_end(args);
+        mainSocket->textAll(sendBuff);
+    }
+    xSemaphoreGive (sendMutex);
     return true;
 }
 
